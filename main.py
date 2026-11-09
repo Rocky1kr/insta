@@ -84,6 +84,7 @@ def post_create(content: str = Form(), db: Session = Depends(get_db)):
 @app.get('/posts/{post_id}')
 def post_detail(request: Request, post: Post = Depends(get_post_or_404)):
      
+     
      return templates.TemplateResponse(
           request=request,
           name='detail.html',
@@ -119,4 +120,15 @@ def post_delete(
      db.commit()
      return RedirectResponse('/posts', status_code=303)
 
+@app.post('/posts/{post_id}/comments/create')
+def comment_create(
+     content:str = Form(),
+     post: Post = Depends(get_post_or_404),
+     db: Session = Depends(get_db)
+    
+):
+     comment = Comment(content=content, post=post)
+     db.add(comment)
+     db.commit()
 
+     return RedirectResponse(f'/posts/{post.id}', status_code=303)
