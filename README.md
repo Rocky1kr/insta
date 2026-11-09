@@ -17,3 +17,8 @@ CREATE DATABASE insta OWNER sd4;
 \q
 
 ```
+
+- alembic init
+```
+uv run alembic init alembic
+```
