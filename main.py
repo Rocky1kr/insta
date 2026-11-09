@@ -20,7 +20,10 @@ class Post(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     content: Mapped[str]
     created_at : Mapped[datetime] = mapped_column(server_default=func.now())
-    comments: Mapped[list['Comment']] = relationship(back_populates='post')
+    comments: Mapped[list['Comment']] = relationship(
+         back_populates='post',
+         cascade='all, delete-orphan'
+         )
 
 class Comment(Base):
      __tablename__ = 'comments'
