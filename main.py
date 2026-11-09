@@ -91,7 +91,7 @@ def post_create(content: str = Form(), db: Session = Depends(get_db)):
 
 @app.get('/posts/{post_id}')
 def post_detail(request: Request, post: Post = Depends(get_post_or_404)):
-  
+    
   return templates.TemplateResponse(
     request=request,
     name='detail.html',
