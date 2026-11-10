@@ -25,6 +25,8 @@ class Post(Base):
     back_populates='post',
     cascade='all, delete-orphan'
   )
+  user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+  user: Mapped['User'] = relationship(back_populates='posts')
 
 class Comment(Base):
   __tablename__ = 'comments'
@@ -42,6 +44,7 @@ class User(Base):
   id: Mapped[int] = mapped_column(primary_key=True)
   username: Mapped[str] = mapped_column(unique=True)
   password_hash: Mapped[str]
+  posts: Mapped[list['Post']] = relationship(back_populates='user')
 
 
 class UserSession(Base):
@@ -50,7 +53,7 @@ class UserSession(Base):
   # 신분증
   id: Mapped[str] = mapped_column(primary_key=True)
   user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-  create_at: Mapped[datetime] = mapped_column(server_default=func.now())
+  created_at: Mapped[datetime] = mapped_column(server_default=func.now())
   user: Mapped['User'] = relationship()
 
 
@@ -122,6 +125,10 @@ def post_new(
   request: Request,
   user: User | None = Depends(get_current_user)
 ):
+  # 로그인 하지 않은사람이라면
+  if user is None:
+    return RedirectResponse('/login', status_code=303)
+ 
   return templates.TemplateResponse(
     request=request,
     name='new.html',
@@ -130,7 +137,14 @@ def post_new(
 
 
 @app.post('/posts/create')
-def post_create(content: str = Form(), db: Session = Depends(get_db)):
+def post_create(
+  content: str = Form(), 
+  db: Session = Depends(get_db),
+  user: User | None = Depends(get_current_user)
+):
+  if user is None:
+    return RedirectResponse('/login', status_code=303)
+
   # db = Session(engine)
   post = Post(content=content)
   db.add(post)
