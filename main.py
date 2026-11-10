@@ -171,16 +171,25 @@ def signup_form(request: Request):
 
 # form method='post' 방식으로 들어오는 signup
 @app.post('/signup')
-def signup(username: str = Form(), 
-           password: str = Form(),
-           db: Session = Depends(get_db)
+def signup(
+  request: Request,
+  username: str = Form(), 
+  password: str = Form(),
+  db: Session = Depends(get_db)
 ):
   # 이미 있는 유저인지 검증
   # SELECT * FROM users WHERE username='changhee'
   exists = db.scalar(select(User).where(User.username == username))
   # 이미 유저네임을 사용하는 경우 
   if exists:
-    pass
+    return templates.TemplateResponse(
+      request=request,
+      name='signup.html',
+      context={'error': '이미 있는 아이디입니다.'}
+    
+
+
+    )
 
   # password를 암호화
   # from pwdlib import PasswordHash
