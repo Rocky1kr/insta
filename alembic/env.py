@@ -20,6 +20,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 # from main import Base, DB_URL
 from database import Base, DB_URL
+import models  # 모델 클래스들을 Base.metadata에 등록 (autogenerate가 테이블을 인식하도록)
 
 target_metadata = Base.metadata
 config.set_main_option('sqlalchemy.url', DB_URL)
