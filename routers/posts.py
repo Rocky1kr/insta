@@ -20,7 +20,10 @@ def post_list(
   
   liked_ids = []
   if user:
-    liked_ids = db.scalars( select(Like.post_id).where(user.id == Like.user_id)  ).all()
+    # liked_ids = db.scalars( select(Like.post_id).where(user.id == Like.user_id)  ).all()
+    
+    # user.likes => select(Like).where(user.id == Like.user_id) 
+    liked_ids = [like.post_id for like in user.likes]
 
 
   # posts = db.scalars(select(Post)).all()

@@ -23,10 +23,19 @@ def user_profile(
   posts = db.scalars(select(Post).where(Post.user_id == owner.id).order_by(Post.created_at.desc())).all()
 
   # 해당프로필에 팔로우가 몇명인지
-  follower_list = db.scalars(select(Follow).where(Follow.follower_id == owner.id)).all()
-  # 해당프로필에 팔로잉이 몇명인지
-  following_list = db.scalars(select(Follow).where(Follow.following_id == owner.id)).all()
+  # 1. 기준을 로그인 유저로 잡아서 잘못쓴 코드
+  # follower_list = db.scalars(select(Follow).where(Follow.follower_id == owner.id)).all()
+  # 2. 프로필 페이지 유저 기준으로 수정
+  # follower_list = db.scalars(select(Follow).where(Follow.following_id == owner.id)).all()
+  # 3. 모델에 relationship() 설정해서 User 객체에서 바로 followings 목록 가져오기
 
+  # 해당프로필에 팔로잉이 몇명인지
+  # following_list = db.scalars(select(Follow).where(Follow.following_id == owner.id)).all()
+  # following_list = db.scalars(select(Follow).where(Follow.follower_id == owner.id)).all()
+
+  follow = None
+  if user:
+    follow = db.get(Follow, (user.id, owner.id))
 
   return templates.TemplateResponse(
     request=request,
@@ -35,8 +44,10 @@ def user_profile(
       'owner': owner,
       'posts': posts,
       'user': user,
-      'follower_list': follower_list,
-      'following_list': following_list
+      'follow': follow
+
+      # 'follower_list': follower_list,
+      # 'following_list': following_list
     }
   )
 
