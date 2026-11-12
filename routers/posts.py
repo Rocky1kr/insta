@@ -1,7 +1,8 @@
 # 설치한 모듈들
-from fastapi import Request, Form, HTTPException, APIRouter
+from fastapi import Request, Form, HTTPException, APIRouter, File, UploadFile
 from fastapi.responses import RedirectResponse
 from sqlalchemy import select
+from photos import save_photo
 
 # 우리가 만든파일
 from models import Post, Comment, Like
@@ -55,8 +56,12 @@ def post_new(
 def post_create(
   db: SessionDep,
   user: CurrentUserDep,
-  content: str = Form()
+  content: str = Form(),
+  photo: UploadFile = File()
 ):
+  # print(photo.filename, photo.content_type)
+  image_url = save_photo(photo)
+
   if user is None:
     return RedirectResponse('/login', status_code=303)
 
